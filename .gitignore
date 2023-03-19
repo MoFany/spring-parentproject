@@ -1,0 +1,11 @@
+# Project exclude paths
+/01-spring-hello/target/
+/02-spring-mybatis/target/
+/03-spring-springwebmvc/target/
+/05-spring-springmvc-mybatisxml/target/
+/07-spring-springmvc-mybatisxml-thymeleaf/target/
+/08-spring-spirngmvc-mybatisannotation-thymeleaf/node_modules/
+/08-spring-spirngmvc-mybatisannotation-thymeleaf/target/
+/09-ssm-fileupload/target/
+/11-ssm-annotation/target/
+/12-guoyan-lvyou-project/target/

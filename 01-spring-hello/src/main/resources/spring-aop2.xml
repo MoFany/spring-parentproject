@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 扫描dao包及其子包下的注解 -->
+    <context:component-scan base-package="com.mofany.dao"/>
+    <!--  控制反转并依赖注入  -->
+    <bean id="teacher" class="com.mofany.entity.Teacher">
+        <property name="jobnum" value="1"/>
+        <property name="name" value="李老师"/>
+        <property name="sex" value="女"/>
+        <property name="subject" value="大学音乐"/>
+    </bean>
+
+    <!--  目标  -->
+    <bean id="teacherDaoImpl" class="com.mofany.dao.impl.TeacherDaoImpl"/>
+    <!--  前置通知  -->
+    <bean id="myBeforeAdvice" class="com.mofany.advice.MyBeforeAdvice"/>
+    <!--  后置返回通知  -->
+    <bean id="myAfterReturningAdvice" class="com.mofany.advice.MyAfterReturningAdvice"/>
+    <!--  环绕通知  -->
+    <bean id="myAroundAdvice" class="com.mofany.advice.MyAroundAdvice"/>
+
+    <!--  给代理指定顾问  -->
+    <bean id="teacherDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <!--  目标（target）  -->
+        <property name="target" ref="teacherDaoImpl"/>
+        <!--  接口数组（interfaces）  -->
+        <property name="interfaces" value="com.mofany.dao.TeacherDao"/>
+        <!--  处理器（Handler）  -->
+        <property name="interceptorNames">
+            <list>
+                <!--  指定顾问名  -->
+                <value>myAdviser</value>
+            </list>
+        </property>
+    </bean>
+
+    <!--  顾问：方法名称匹配顾问 （多种情况就得使用多个顾问） -->
+    <bean id="myAdviser" class="org.springframework.aop.support.NameMatchMethodPointcutAdvisor">
+        <!--  指定通知  -->
+        <property name="advice" ref="myAroundAdvice"/>
+        <!--  方法名称匹配：其可以使用正则表达式  -->
+        <property name="mappedNames">
+            <list>
+                <!--  方法名筛选  -->
+                <value>*Insert</value>
+                <value>*Delete</value>
+                <value>*Update</value>
+            </list>
+        </property>
+    </bean>
+
+</beans>

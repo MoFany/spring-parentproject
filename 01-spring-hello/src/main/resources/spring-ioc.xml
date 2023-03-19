@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<!--  基于构造函数的依赖注入IOC（控制反转）  -->
+<!--  按形参下标开始  -->
+    <bean id="teacher1" class="com.mofany.entity.Teacher">
+        <constructor-arg index="0" value="1"></constructor-arg>
+        <constructor-arg index="1" value="王老师"></constructor-arg>
+        <constructor-arg index="2" value="男"></constructor-arg>
+        <constructor-arg index="3" value="大学语文"></constructor-arg>
+    </bean>
+<!--  按形参类型  -->
+    <bean id="teacher2" class="com.mofany.entity.Teacher">
+        <constructor-arg type="java.lang.Integer" value="2"></constructor-arg>
+        <constructor-arg type="java.lang.String" value="李老师"></constructor-arg>
+        <constructor-arg type="java.lang.String" value="女"></constructor-arg>
+        <constructor-arg type="java.lang.String" value="大学历史"></constructor-arg>
+    </bean>
+<!--  按参数名  -->
+    <bean id="teacher3" class="com.mofany.entity.Teacher">
+        <constructor-arg name="jobnum" value="3"></constructor-arg>
+        <constructor-arg name="name" value="洪老师"></constructor-arg>
+        <constructor-arg name="sex" value="男"></constructor-arg>
+        <constructor-arg name="subject" value="大学体育"></constructor-arg>
+    </bean>
+<!-- 引用其它bean：适用于构造器的参数是其他bean的实例时使用 -->
+
+<!--  利用指定的工厂方法实例化bean  -->
+    <bean id="teacher4" class="com.mofany.util.TeacherFactoryUtil" factory-method="initTeacherFactory">
+        <constructor-arg value="4"/>
+        <constructor-arg value="蒋老师"/>
+        <constructor-arg value="男"/>
+        <constructor-arg value="大学物理"/>
+    </bean>
+
+<!-- p-namespace，p属性的使用，xmlns:p="http://www.springframework.org/schema/p"/-->
+    <bean id="teacher5" class="com.mofany.entity.Teacher" p:jobnum="5" p:name="何老师" p:sex="男" p:subject="大学音乐"/>
+<!-- c-namespace，c属性的使用，xmlns:c="http://www.springframework.org/schema/c"-->
+    <bean id="teacher6" class="com.mofany.entity.Teacher" c:_0="6" c:_1="汪老师" c:_2="男" c:_3="大学相声"/>
+
+</beans>

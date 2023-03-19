@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       https://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       https://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/context
+       https://www.springframework.org/schema/context/spring-context.xsd">
+    <!-- 扫描dao包及其子包下的注解 -->
+    <context:component-scan base-package="com.mofany.dao"/>
+    <!--  按名字进行自动依赖注入  -->
+    <bean id="teacher" class="com.mofany.entity.Teacher">
+        <property name="jobnum" value="1"/>
+        <property name="name" value="李老师"/>
+        <property name="sex" value="女"/>
+        <property name="subject" value="大学音乐"/>
+    </bean>
+
+    <!--  面向切面编程：jdk动态代理 ，SpringAOP默认使用标准的JDK动态代理作为AOP代理
+          jdk动态代理三要素 ：类加载器、接口数组、处理器
+    -->
+    <!--  目标  -->
+    <bean id="teacherDaoImpl" class="com.mofany.dao.impl.TeacherDaoImpl"/>
+    <!--  前置通知  -->
+    <bean id="myBeforeAdvice" class="com.mofany.advice.MyBeforeAdvice"/>
+    <!--  后置返回通知  -->
+    <bean id="myAfterReturningAdvice" class="com.mofany.advice.MyAfterReturningAdvice"/>
+    <!--  环绕通知  -->
+    <bean id="myAroundAdvice" class="com.mofany.advice.MyAroundAdvice"/>
+
+    <!--  代理（填充代理三要素）  -->
+    <bean id="teacherDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <!--  目标（target）  -->
+        <property name="target" ref="teacherDaoImpl"/>
+        <!--  接口数组（interfaces）  -->
+        <property name="interfaces" value="com.mofany.dao.TeacherDao"/>
+        <!--  处理器（Handler）  -->
+        <property name="interceptorNames">
+            <list>
+                <!--  指定通知  -->
+                <value>myBeforeAdvice</value>
+                <value>myAfterReturningAdvice</value>
+                <value>myAroundAdvice</value>
+            </list>
+        </property>
+    </bean>
+
+    <!--  面向切面编程：可以强制使用CGLib作为AOP代理  -->
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <aop:config proxy-target-class="true"/>
+
+</beans>

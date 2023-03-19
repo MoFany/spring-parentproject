@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       https://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/cache/spring-cache.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+<!--  组件扫描排除@Controller  -->
+    <context:component-scan base-package="com.mofany" use-default-filters="true">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+<!--  引入外部数据源  -->
+    <context:property-placeholder location="classpath*:db.properties"/>
+<!--  配置数据源  -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.Driver}"/>
+        <property name="url" value="${jdbc.Url}"/>
+        <property name="username" value="${jdbc.UserName}"/>
+        <property name="password" value="${jdbc.Password}"/>
+    </bean>
+<!--  配置MyBatis核心SqlSessionFactory  -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="typeAliasesPackage" value="com.mofany.entity"/>
+        <property name="mapperLocations" value="classpath*:mapper/*Mapper.xml"/>
+        <property name="plugins">
+            <list>
+                <bean class="com.github.pagehelper.PageInterceptor">
+                    <property name="properties">
+                        <value>
+                            helperDialect=MYSQL
+                        </value>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+<!--  配置mapper接口扫描器  -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="SqlSessionFactory"/>
+        <property name="basePackage" value="com.mofany.mapper"/>
+    </bean>
+<!--  为数据源指定事务管理器  -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+<!--  为事务管理器配置通知  -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="select*" propagation="NOT_SUPPORTED"/>
+            <tx:method name="insert*" propagation="REQUIRED" no-rollback-for="java.lang.RuntimeException"/>
+            <tx:method name="delete*" propagation="REQUIRED" no-rollback-for="java.lang.RuntimeException"/>
+            <tx:method name="update*" propagation="REQUIRED" no-rollback-for="java.lang.RuntimeException"/>
+        </tx:attributes>
+    </tx:advice>
+<!--  为事务配置aop  -->
+    <aop:config>
+        <aop:pointcut id="pointCutOne" expression="execution(* com.mofany.service.impl.*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="pointCutOne"/>
+    </aop:config>
+</beans>

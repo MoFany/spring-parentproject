@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<!--
+SSM+Thymeleaf整合开发
+-->
+<body>
+<table>
+    <caption>Student Table</caption>
+    <thead>
+        <tr>
+            <th>id</th>
+            <th>name</th>
+            <th>sex</th>
+            <th>age</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="student:${studentList}">
+            <td th:text="${student.id}"></td>
+            <td th:text="${student.name}"></td>
+            <td th:text="${student.sex}"></td>
+            <td th:text="${student.age}"></td>
+        </tr>
+    </tbody>
+</table>
+</body>
+<!---->
+<script>
+
+</script>
+</html>

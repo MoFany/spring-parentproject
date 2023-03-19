@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <!--  配置组件扫描  -->
+    <context:component-scan base-package="com.mofany.entity"/>
+    <context:component-scan base-package="com.mofany.mapper"/>
+    <context:component-scan base-package="com.mofany.service"/>
+    <!--  配置外部数据源引入  -->
+    <context:property-placeholder location="classpath*:db.properties"/>
+    <!--  配置数据源  -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${jdbc.Driver}"/>
+        <property name="url" value="${jdbc.Url}"/>
+        <property name="username" value="${jdbc.UserName}"/>
+        <property name="password" value="${jdbc.Password}"/>
+    </bean>
+    <!--  为数据源添加事务管理器  -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--  为事务管理器注册驱动  -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+
+
+<!--  MyBatis核心配置SqlSessionFactory  -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--  指定数据源  -->
+        <property name="dataSource" ref="dataSource"/>
+        <!--  指定基于包的别名  -->
+        <property name="typeAliasesPackage" value="com.mofany.entity"/>
+        <!--  指定mapper映射文件  -->
+        <property name="mapperLocations" value="classpath*:mapper/*Mapper.xml"/>
+        <!--  指定插件  -->
+        <property name="plugins">
+            <list>
+                <!--  分页插件  -->
+                <bean class="com.github.pagehelper.PageInterceptor">
+                    <property name="properties">
+                        <value>
+                            helperDialect=MYSQL
+                        </value>
+                    </property>
+                </bean>
+            </list>
+        </property>
+        <!--  指定外部的MyBatis的核心配置文件  -->
+        <!--        <property name="configLocation" value="classpath*:mybatis-config.xml"/>-->
+    </bean>
+<!--  配置mybatis的mappers映射器  -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--  扫描mapper接口所在包  -->
+        <property name="basePackage" value="com.mofany.mapper"/>
+        <!--  指定SqlSessionFactory  -->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+<!--  配置mapper实例的管理器,即返回mapper接口的代理对象  -->
+    <bean id="studentMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <!--  指定mapper接口  -->
+        <property name="mapperInterface" value="com.mofany.mapper.StudentMapper"/>
+        <!--  指定SqlSessionFactory  -->
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+    </bean>
+
+
+</beans>

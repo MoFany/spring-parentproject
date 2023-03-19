@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mofany.mapper.ViewPointMapper">
+    <!--  一个景点由多家旅游公司合作共同经营，即有多个所属公司，故景点与所属公司是一对多的关系  -->
+    <resultMap id="BaseResultMap" type="com.mofany.entity.ViewPoint">
+        <id property="id" column="id"/>
+        <result property="name" column="viewpointName"/>
+        <result property="principal" column="principal"/>
+        <result property="tickets" column="tickets"/>
+        <result property="established" column="established"/>
+        <result property="opentime" column="opentime"/>
+        <!--   显示所属公司信息     -->
+        <collection property="companyList" ofType="com.mofany.entity.AffiliatedCompany">
+            <id property="id" column="companyId"/>
+            <result property="name" column="companyName"/>
+            <result property="legal_person" column="legalPerson"/>
+            <result property="address" column="address"/>
+            <result property="established" column="companyEstablished"/>
+        </collection>
+    </resultMap>
+    <!--  MyBatis动态Sql实现：景点信息多条件查询  -->
+    <select id="selectByEntity" resultType="com.mofany.entity.ViewPoint" parameterType="com.mofany.entity.ViewPoint">
+        select *
+        from viewpoint
+        <where>
+            <if test="id != null">
+                or id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="name != null and name != ''">
+                or name = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="principal != null and principal != ''">
+                or principal = #{principal,jdbcType=VARCHAR}
+            </if>
+            <if test="tickets != null">
+                or tickets = #{tickets,jdbcType=DECIMAL}
+            </if>
+            <if test="established != null">
+                or established = #{established,jdbcType=TIMESTAMP}
+            </if>
+            <if test="opentime != null">
+                or opentime = #{opentime,jdbcType=TIME}
+            </if>
+        </where>
+    </select>
+
+    <!--  MyBatis动态Sql实现：按实体插入  -->
+    <insert id="insertByEntity" parameterType="com.mofany.entity.ViewPoint">
+        insert into viewpoint
+        values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{principal,jdbcType=VARCHAR},
+                #{tickets,jdbcType=DECIMAL}, #{established,jdbcType=TIMESTAMP}, #{opentime,jdbcType=TIME})
+    </insert>
+
+    <!--  MyBatis动态Sql实现：按id对景点信息的修改  -->
+    <update id="updateByEntity" parameterType="com.mofany.entity.ViewPoint">
+        update viewpoint
+        <set>
+            <if test="name != null and name != ''">
+                name=#{name,jdbcType=VARCHAR},
+            </if>
+            <if test="principal != null and principal != ''">
+                principal=#{principal,jdbcType=VARCHAR},
+            </if>
+            <if test="tickets != null">
+                tickets=#{tickets,jdbcType=DECIMAL},
+            </if>
+            <if test="established != null">
+                established=#{established,jdbcType=TIMESTAMP},
+            </if>
+            <if test="opentime != null">
+                opentime=#{opentime,jdbcType=TIME}
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!--  MyBatis动态Sql实现：删除与批量删除
+      parameterType=int[]
+      collection=array
+      -->
+    <delete id="deleteByIds" parameterType="java.util.List">
+        delete
+        from viewpoint
+        <where>
+            id in
+            <foreach item="ids" collection="list" open="(" separator="," close=")">
+                #{ids}
+            </foreach>
+        </where>
+    </delete>
+
+    <!--  分页显示并联合查询  -->
+    <select id="SelectByPage" resultMap="BaseResultMap">
+        select A.id,
+               A.name         as viewpointName,
+               A.principal,
+               A.tickets,
+               A.established,
+               A.opentime,
+               C.id           as companyId,
+               C.name         as companyName,
+               C.legal_person as legalPerson,
+               C.address,
+               C.established  as companyEstablished
+        from viewpoint as A
+                     join relation as B on A.id = B.viewpoint_id
+                     join affiliated_company as C on C.id = B.company_id
+    </select>
+
+    <!-- 多条件分页显示并联合查询 -->
+    <select id="SelectByPages" resultMap="BaseResultMap" parameterType="com.mofany.entity.ViewPoint">
+        select A.id,
+               A.name         as viewpointName,
+               A.principal,
+               A.tickets,
+               A.established,
+               A.opentime,
+               C.id           as companyId,
+               C.name         as companyName,
+               C.legal_person as legalPerson,
+               C.address,
+               C.established  as companyEstablished
+        from viewpoint as A
+                     join relation as B on A.id = B.viewpoint_id
+                     join affiliated_company as C on C.id = B.company_id
+        <where>
+            <if test="id != null">
+                or id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="name != null and name != ''">
+                or A.name = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="principal != null and principal != ''">
+                or principal = #{principal,jdbcType=VARCHAR}
+            </if>
+            <if test="tickets != null">
+                or tickets = #{tickets,jdbcType=DECIMAL}
+            </if>
+            <if test="established != null">
+                or A.established = #{established,jdbcType=TIMESTAMP}
+            </if>
+            <if test="opentime != null">
+                or opentime = #{opentime,jdbcType=TIME}
+            </if>
+        </where>
+    </select>
+</mapper>
+

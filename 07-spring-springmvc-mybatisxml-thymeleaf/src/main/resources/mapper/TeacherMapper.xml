@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mofany.mapper.TeacherMapper">
+<!-- 结果集映射 -->
+    <resultMap id="BaseResultMap" type="com.mofany.entity.Teacher">
+        <id property="jobnum" column="jobnum" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+        <result property="name" column="name" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="sex" column="sex" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="subject" column="subject" jdbcType="VARCHAR" javaType="java.lang.String"/>
+    </resultMap>
+<!--  增  -->
+    <insert id="insertTeacher" parameterType="com.mofany.entity.Teacher" keyColumn="" keyProperty="jobNum">
+        insert into teacher
+        values (#{jobnum,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{sex,jdbcType=VARCHAR},
+                #{subject,jdbcType=VARCHAR})
+    </insert>
+<!--  删  -->
+    <delete id="deleteById" parameterType="int">
+        delete
+        from teacher
+        where jobnum = #{id,jdbcType=INTEGER}
+    </delete>
+<!--  查  -->
+    <select id="selectIdsByName" resultType="int" parameterType="java.lang.String">
+        select jobnum
+        from teacher
+        where name = #{name,jdbcType=VARCHAR}
+    </select>
+    <select id="selectByName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select * from teacher where name = #{name,jdbcType=VARCHAR}
+    </select>
+</mapper>

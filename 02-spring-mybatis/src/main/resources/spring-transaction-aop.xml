@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       https://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/cache
+       http://www.springframework.org/schema/cache/spring-cache.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop
+       https://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!--  配置组件扫描  -->
+    <context:component-scan base-package="com.mofany.dao"/>
+    <context:component-scan base-package="com.mofany.entity"/>
+    <!--  配置外部数据源  -->
+    <context:property-placeholder location="classpath*:db.properties"/>
+    <!--  配置spring默认数据源  -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${jdbc.Driver}"/>
+        <property name="url" value="${jdbc.Url}"/>
+        <property name="username" value="${jdbc.UserName}"/>
+        <property name="password" value="${jdbc.Password}"/>
+    </bean>
+
+    <!--  配置JDBC模版  -->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!--  为数据源添加事务管理器  -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!--  配置事务的advice  -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <!--  声明式事务管理根据配置的方法名匹配是否需要事务  -->
+            <tx:method name="select*" read-only="true" propagation="NOT_SUPPORTED" isolation="DEFAULT"/>
+            <tx:method name="update*" propagation="REQUIRED" read-only="false" no-rollback-for="java.lang.RuntimeException"/>
+            <tx:method name="insert*" propagation="REQUIRED" read-only="false" no-rollback-for="java.lang.RuntimeException"/>
+            <tx:method name="delete*" propagation="REQUIRED" read-only="false" no-rollback-for="java.lang.RuntimeException"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!--  配置事务的aop  -->
+    <aop:config>
+        <!--  定义切入点  -->
+        <aop:pointcut id="studentPointCut1" expression="execution(* com.mofany.dao.impl.StudentDaoImpl.*(..))"/>
+        <aop:pointcut id="studentPointCut2" expression="execution(* com.mofany.dao.impl.StudentDaoImpl.*(..))"/>
+        <aop:pointcut id="studentPointCut3" expression="execution(* com.mofany.dao.impl.StudentDaoImpl.*(..))"/>
+        <!--  配置顾问：通知引用与切入点引用  -->
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="studentPointCut1"/>
+    </aop:config>
+
+</beans>

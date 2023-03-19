@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mofany.mapper.StudentMapper">
+    <!--结果集映射-->
+    <resultMap id="BaseResultMap" type="com.mofany.entity.Student">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="sex" column="sex"/>
+        <result property="age" column="age"/>
+    </resultMap>
+    <!--  查询  -->
+    <select id="selectByName" resultMap="BaseResultMap">
+        select *
+        from student
+        where name = #{name,jdbcType=VARCHAR}
+    </select>
+    <!--  修改  -->
+    <update id="updateById" parameterType="com.mofany.entity.Student">
+        update student
+        set name=#{name,jdbcType=VARCHAR},
+            sex=#{sex,jdbcType=VARCHAR},
+            age=#{age,jdbcType=SMALLINT}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <!--  新增  -->
+    <insert id="insert" parameterType="com.mofany.entity.Student">
+        insert into student
+        values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{sex,jdbcType=VARCHAR}, #{age,jdbcType=SMALLINT});
+    </insert>
+    <!--  删除  -->
+    <delete id="deleteByName" parameterType="String">
+        delete
+        from student
+        where name = #{name,jdbcType=VARCHAR}
+    </delete>
+</mapper>

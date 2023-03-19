@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- 三种自动注入 -->
+    <bean id="student" class="com.mofany.entity.Student">
+        <property name="id" value="001"/>
+        <property name="name" value="璐瑶"/>
+        <property name="sex" value="女"/>
+        <property name="age" value="22"/>
+    </bean>
+
+    <!--  1：按需按名称自动注入  -->
+    <bean id="studentDaoImpl1" class="com.mofany.dao.impl.StudentDaoImpl" autowire="byName"/>
+    <!--  2：按需按类型自动注入  -->
+    <bean id="studentDaoImpl2" class="com.mofany.dao.impl.StudentDaoImpl" autowire="byType"/>
+    <!--  3：按需按构造器自动注入  -->
+    <bean id="studentDaoImpl3" class="com.mofany.dao.impl.StudentDaoImpl" autowire="constructor"/>
+</beans>

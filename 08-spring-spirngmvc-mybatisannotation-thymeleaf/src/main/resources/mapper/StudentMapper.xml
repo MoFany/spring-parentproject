@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mofany.mapper.StudentMapper">
+    <resultMap id="StudentResultMap" type="com.mofany.entity.Student">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="sex" column="sex"/>
+        <result property="age" column="age"/>
+    </resultMap>
+    <insert id="insertStudent" parameterType="com.mofany.entity.Student">
+        insert into student
+        values (#{id,jdbcType=INTEGER},
+                #{name,jdbcType=VARCHAR},
+                #{sex,jdbcType=VARCHAR},
+                #{age,jdbcType=SMALLINT})
+    </insert>
+    <select id="selectByName" parameterType="java.lang.String" resultMap="StudentResultMap">
+        select *
+        from student
+        where name = #{name,jdbcType=VARCHAR}
+    </select>
+</mapper>
